@@ -70,41 +70,57 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+  final FocusNode _focusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
-    // 키보드 입력 리스너 (데스크톱용)
-    _setupKeyboardListener();
+    // 위젯이 빌드된 후 포커스 요청
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
   }
 
-  void _setupKeyboardListener() {
-    FocusScope.of(context).requestFocus(FocusNode());
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        widget.gameState.moveLeft();
+        setState(() {});
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        widget.gameState.moveRight();
+        setState(() {});
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        widget.gameState.moveDown();
+        setState(() {});
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
+          event.logicalKey == LogicalKeyboardKey.keyW) {
+        widget.gameState.rotate();
+        setState(() {});
+      } else if (event.logicalKey == LogicalKeyboardKey.space) {
+        widget.gameState.hardDrop();
+        setState(() {});
+      } else if (event.logicalKey == LogicalKeyboardKey.keyP) {
+        setState(() {
+          widget.gameState.togglePause();
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: RawKeyboardListener(
-        focusNode: FocusNode()..requestFocus(),
-        onKey: (RawKeyEvent event) {
-          if (event is RawKeyDownEvent) {
-            if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-              widget.gameState.moveLeft();
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-              widget.gameState.moveRight();
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              widget.gameState.moveDown();
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
-                event.logicalKey == LogicalKeyboardKey.keyW) {
-              widget.gameState.rotate();
-            } else if (event.logicalKey == LogicalKeyboardKey.space) {
-              widget.gameState.hardDrop();
-            } else if (event.logicalKey == LogicalKeyboardKey.keyP) {
-              widget.gameState.togglePause();
-            }
-          }
-        },
+      body: KeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: _handleKeyEvent,
         child: Stack(
           children: [
             // 게임 화면
@@ -133,3 +149,5 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 }
+
+
