@@ -23,6 +23,15 @@ class GameStateModel extends HiveObject {
   @HiveField(5)
   int nextPieceType;
 
+  @HiveField(11)
+  List<int> nextPieceQueue;
+
+  @HiveField(12)
+  int? holdPieceType;
+
+  @HiveField(13)
+  bool canHold;
+
   @HiveField(6)
   int score;
 
@@ -45,6 +54,9 @@ class GameStateModel extends HiveObject {
     required this.currentPieceY,
     required this.currentRotation,
     required this.nextPieceType,
+    required this.nextPieceQueue,
+    this.holdPieceType,
+    required this.canHold,
     required this.score,
     required this.level,
     required this.lines,
@@ -60,6 +72,9 @@ class GameStateModel extends HiveObject {
       currentPieceY: currentPieceY,
       currentRotation: currentRotation,
       nextPieceType: nextPieceType,
+      nextPieceQueue: List<int>.from(nextPieceQueue),
+      holdPieceType: holdPieceType,
+      canHold: canHold,
       score: score,
       level: level,
       lines: lines,
@@ -76,6 +91,9 @@ class GameStateModel extends HiveObject {
       currentPieceY: entity.currentPieceY,
       currentRotation: entity.currentRotation,
       nextPieceType: entity.nextPieceType,
+      nextPieceQueue: List<int>.from(entity.nextPieceQueue),
+      holdPieceType: entity.holdPieceType,
+      canHold: entity.canHold,
       score: entity.score,
       level: entity.level,
       lines: entity.lines,

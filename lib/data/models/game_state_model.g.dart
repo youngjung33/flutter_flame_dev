@@ -25,6 +25,9 @@ class GameStateModelAdapter extends TypeAdapter<GameStateModel> {
       currentPieceY: fields[3] as int,
       currentRotation: fields[4] as int,
       nextPieceType: fields[5] as int,
+      nextPieceQueue: (fields[11] as List).cast<int>(),
+      holdPieceType: fields[12] as int?,
+      canHold: fields[13] as bool,
       score: fields[6] as int,
       level: fields[7] as int,
       lines: fields[8] as int,
@@ -36,7 +39,7 @@ class GameStateModelAdapter extends TypeAdapter<GameStateModel> {
   @override
   void write(BinaryWriter writer, GameStateModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.board)
       ..writeByte(1)
@@ -49,6 +52,12 @@ class GameStateModelAdapter extends TypeAdapter<GameStateModel> {
       ..write(obj.currentRotation)
       ..writeByte(5)
       ..write(obj.nextPieceType)
+      ..writeByte(11)
+      ..write(obj.nextPieceQueue)
+      ..writeByte(12)
+      ..write(obj.holdPieceType)
+      ..writeByte(13)
+      ..write(obj.canHold)
       ..writeByte(6)
       ..write(obj.score)
       ..writeByte(7)

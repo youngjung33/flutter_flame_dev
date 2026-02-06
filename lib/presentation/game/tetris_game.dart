@@ -1,13 +1,15 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import '../components/board_component.dart';
-import '../components/next_piece_component.dart';
+import '../components/hold_piece_component.dart';
+import '../components/next_queue_component.dart';
 import '../managers/game_state_manager.dart';
 
 class TetrisGame extends FlameGame {
   final GameStateManager gameState;
   late final BoardComponent board;
-  late final NextPieceComponent nextPiece;
+  late final HoldPieceComponent holdPiece;
+  late final NextQueueComponent nextQueue;
 
   TetrisGame({required this.gameState});
 
@@ -31,16 +33,27 @@ class TetrisGame extends FlameGame {
     );
     add(board);
 
-    // 다음 블록 컴포넌트 추가 (보드 오른쪽 상단)
-    nextPiece = NextPieceComponent(
+    // Hold 블록 컴포넌트 추가 (보드 왼쪽 상단)
+    holdPiece = HoldPieceComponent(
       gameState: gameState,
       cellSize: cellSize * 0.6,
     );
-    nextPiece.position = Vector2(
+    holdPiece.position = Vector2(
+      board.position.x - 100,
+      board.position.y,
+    );
+    add(holdPiece);
+
+    // Next Queue 컴포넌트 추가 (보드 오른쪽 상단)
+    nextQueue = NextQueueComponent(
+      gameState: gameState,
+      cellSize: cellSize * 0.5,
+    );
+    nextQueue.position = Vector2(
       board.position.x + boardWidth + 20,
       board.position.y,
     );
-    add(nextPiece);
+    add(nextQueue);
   }
 
   @override

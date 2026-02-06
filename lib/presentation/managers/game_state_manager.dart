@@ -27,6 +27,9 @@ class GameStateManager {
   int currentPieceY = 0;
   int currentRotation = 0;
   int nextPieceType = 0;
+  List<int> nextPieceQueue = []; // 다음 블록 여러 개 (최대 5개)
+  int? holdPieceType; // 보관된 블록
+  bool canHold = true; // Hold 가능 여부 (블록 스폰 시마다 리셋)
   int score = 0;
   int level = 1;
   int lines = 0;
@@ -36,6 +39,7 @@ class GameStateManager {
 
   double fallTimer = 0.0;
   double fallDelay = 1.0; // 초기 낙하 속도 (초)
+  bool isSoftDropping = false; // Soft Drop 중인지
 
   GameStateManager({
     required this.saveGameScore,
@@ -46,12 +50,26 @@ class GameStateManager {
 
   Future<void> initialize() async {
     highScore = await getHighScore.call();
+    _initializeNextQueue();
     _generateNextPiece();
     _spawnPiece();
   }
 
+  // Next Queue 초기화 (5개 블록 미리 생성)
+  void _initializeNextQueue() {
+    nextPieceQueue = [];
+    for (int i = 0; i < 5; i++) {
+      nextPieceQueue.add(Random().nextInt(7) + 1);
+    }
+  }
+
   void _generateNextPiece() {
-    nextPieceType = Random().nextInt(7) + 1;
+    if (nextPieceQueue.isEmpty) {
+      _initializeNextQueue();
+    }
+    nextPieceType = nextPieceQueue.removeAt(0);
+    // 큐에 새로운 블록 추가
+    nextPieceQueue.add(Random().nextInt(7) + 1);
   }
 
   void _spawnPiece() {
@@ -59,6 +77,7 @@ class GameStateManager {
     currentPieceX = boardWidth ~/ 2 - 2;
     currentPieceY = 0;
     currentRotation = 0;
+    canHold = true; // 새 블록 스폰 시 Hold 가능
     _generateNextPiece();
 
     // 게임 오버 체크
@@ -124,6 +143,45 @@ class GameStateManager {
     }
   }
 
+  // Hold 기능 (현재 블록을 보관하고 다음 블록 가져오기)
+  void hold() {
+    if (isGameOver || isPaused || !canHold) return;
+
+    if (holdPieceType == null) {
+      // 보관함이 비어있으면 현재 블록 보관
+      holdPieceType = currentPieceType;
+      _spawnPiece();
+    } else {
+      // 보관함에 블록이 있으면 교환
+      final temp = holdPieceType;
+      holdPieceType = currentPieceType;
+      currentPieceType = temp!;
+      currentPieceX = boardWidth ~/ 2 - 2;
+      currentPieceY = 0;
+      currentRotation = 0;
+    }
+    canHold = false; // 한 번만 Hold 가능
+  }
+
+  // Soft Drop (아래 키를 누르고 있을 때 빠르게 낙하)
+  void startSoftDrop() {
+    if (isGameOver || isPaused) return;
+    isSoftDropping = true;
+  }
+
+  void stopSoftDrop() {
+    isSoftDropping = false;
+  }
+
+  // Ghost Piece 위치 계산 (블록이 떨어질 위치)
+  int getGhostY() {
+    int ghostY = currentPieceY;
+    while (_isValidPosition(currentPieceX, ghostY + 1, currentRotation)) {
+      ghostY++;
+    }
+    return ghostY;
+  }
+
   void hardDrop() {
     if (isGameOver || isPaused) return;
     while (_isValidPosition(currentPieceX, currentPieceY + 1, currentRotation)) {
@@ -176,10 +234,16 @@ class GameStateManager {
   void update(double dt) {
     if (isGameOver || isPaused) return;
 
+    // Soft Drop 중이면 더 빠르게 낙하
+    final currentFallDelay = isSoftDropping ? 0.05 : fallDelay;
+
     fallTimer += dt;
-    if (fallTimer >= fallDelay) {
+    if (fallTimer >= currentFallDelay) {
       if (_isValidPosition(currentPieceX, currentPieceY + 1, currentRotation)) {
         currentPieceY++;
+        if (isSoftDropping) {
+          score += 1; // Soft Drop 보너스 (블록당 1점)
+        }
         fallTimer = 0.0;
       } else {
         _lockPiece();
@@ -234,6 +298,10 @@ class GameStateManager {
     fallTimer = 0.0;
     fallDelay = 1.0;
     _gameOverCalled = false;
+    holdPieceType = null;
+    canHold = true;
+    isSoftDropping = false;
+    _initializeNextQueue();
     _generateNextPiece();
     _spawnPiece();
   }
@@ -246,6 +314,9 @@ class GameStateManager {
       currentPieceY: currentPieceY,
       currentRotation: currentRotation,
       nextPieceType: nextPieceType,
+      nextPieceQueue: List<int>.from(nextPieceQueue),
+      holdPieceType: holdPieceType,
+      canHold: canHold,
       score: score,
       level: level,
       lines: lines,
@@ -261,6 +332,9 @@ class GameStateManager {
     currentPieceY = state.currentPieceY;
     currentRotation = state.currentRotation;
     nextPieceType = state.nextPieceType;
+    nextPieceQueue = List<int>.from(state.nextPieceQueue);
+    holdPieceType = state.holdPieceType;
+    canHold = state.canHold;
     score = state.score;
     level = state.level;
     lines = state.lines;

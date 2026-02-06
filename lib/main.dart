@@ -96,6 +96,7 @@ class _GameScreenState extends State<GameScreen> {
         widget.gameState.moveRight();
         setState(() {});
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        widget.gameState.startSoftDrop();
         widget.gameState.moveDown();
         setState(() {});
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
@@ -105,10 +106,19 @@ class _GameScreenState extends State<GameScreen> {
       } else if (event.logicalKey == LogicalKeyboardKey.space) {
         widget.gameState.hardDrop();
         setState(() {});
+      } else if (event.logicalKey == LogicalKeyboardKey.keyC ||
+          event.logicalKey == LogicalKeyboardKey.keyH) {
+        widget.gameState.hold();
+        setState(() {});
       } else if (event.logicalKey == LogicalKeyboardKey.keyP) {
         setState(() {
           widget.gameState.togglePause();
         });
+      }
+    } else if (event is KeyUpEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        widget.gameState.stopSoftDrop();
+        setState(() {});
       }
     }
   }
@@ -140,6 +150,11 @@ class _GameScreenState extends State<GameScreen> {
               onReset: () {
                 setState(() {
                   widget.gameState.reset();
+                });
+              },
+              onHold: () {
+                setState(() {
+                  widget.gameState.hold();
                 });
               },
             ),

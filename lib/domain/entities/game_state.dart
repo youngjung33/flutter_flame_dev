@@ -8,6 +8,9 @@ class GameState extends Equatable {
   final int currentPieceY;
   final int currentRotation;
   final int nextPieceType;
+  final List<int> nextPieceQueue; // 다음 블록 여러 개
+  final int? holdPieceType; // 보관된 블록 (null = 없음)
+  final bool canHold; // Hold 가능 여부 (한 번만 Hold 가능)
   final int score;
   final int level;
   final int lines;
@@ -21,6 +24,9 @@ class GameState extends Equatable {
     required this.currentPieceY,
     required this.currentRotation,
     required this.nextPieceType,
+    required this.nextPieceQueue,
+    this.holdPieceType,
+    required this.canHold,
     required this.score,
     required this.level,
     required this.lines,
@@ -36,6 +42,9 @@ class GameState extends Equatable {
         currentPieceY,
         currentRotation,
         nextPieceType,
+        nextPieceQueue,
+        holdPieceType,
+        canHold,
         score,
         level,
         lines,

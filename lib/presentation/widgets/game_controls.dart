@@ -6,11 +6,13 @@ class GameControls extends StatelessWidget {
   final GameStateManager gameState;
   final Function() onPause;
   final Function() onReset;
+  final Function() onHold;
 
   const GameControls({
     required this.gameState,
     required this.onPause,
     required this.onReset,
+    required this.onHold,
     super.key,
   });
 
@@ -42,6 +44,16 @@ class GameControls extends StatelessWidget {
               shape: const CircleBorder(),
             ),
             child: const Icon(Icons.rotate_right, color: Colors.white),
+          ),
+          // Hold
+          ElevatedButton(
+            onPressed: (gameState.isGameOver || !gameState.canHold) ? null : onHold,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal,
+              padding: const EdgeInsets.all(16),
+              shape: const CircleBorder(),
+            ),
+            child: const Icon(Icons.swap_horiz, color: Colors.white),
           ),
           // 아래 이동
           ElevatedButton(

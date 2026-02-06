@@ -62,6 +62,28 @@ class BoardComponent extends PositionComponent with HasGameRef {
       }
     }
 
+    // Ghost Piece 그리기 (예상 낙하 위치)
+    if (!gameState.isGameOver) {
+      final ghostY = gameState.getGhostY();
+      if (ghostY != gameState.currentPieceY) {
+        final pattern = TetrominoPatterns.getPattern(
+          gameState.currentPieceType,
+          gameState.currentRotation,
+        );
+        for (int py = 0; py < 4; py++) {
+          for (int px = 0; px < 4; px++) {
+            if (pattern[py][px] == 1) {
+              final x = gameState.currentPieceX + px;
+              final y = ghostY + py;
+              if (y >= 0 && y < GameStateManager.boardHeight) {
+                _drawGhostBlock(canvas, x, y, gameState.currentPieceType);
+              }
+            }
+          }
+        }
+      }
+    }
+
     // 현재 블록 그리기
     if (!gameState.isGameOver) {
       final pattern = TetrominoPatterns.getPattern(
@@ -80,6 +102,36 @@ class BoardComponent extends PositionComponent with HasGameRef {
         }
       }
     }
+  }
+
+  void _drawGhostBlock(Canvas canvas, int x, int y, int type) {
+    final colors = [
+      Colors.transparent,
+      Colors.cyan,
+      Colors.yellow,
+      Colors.purple,
+      Colors.green,
+      Colors.red,
+      Colors.blue,
+      Colors.orange,
+    ];
+
+    final color = colors[type] ?? Colors.white;
+    final rect = Rect.fromLTWH(
+      x * cellSize + 1,
+      y * cellSize + 1,
+      cellSize - 2,
+      cellSize - 2,
+    );
+
+    // 반투명 테두리만 그리기
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..color = color.withOpacity(0.3)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0,
+    );
   }
 
   void _drawBlock(Canvas canvas, int x, int y, int type) {
