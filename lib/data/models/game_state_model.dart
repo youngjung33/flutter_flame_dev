@@ -3,10 +3,11 @@ import '../../domain/entities/game_state.dart';
 
 part 'game_state_model.g.dart';
 
+/** Hive 저장용 게임 상태 모델 (typeId: 1). [GameState] 엔티티와 변환. */
 @HiveType(typeId: 1)
 class GameStateModel extends HiveObject {
   @HiveField(0)
-  List<List<int>> board;
+  List<List<int>> board; // 0=빈칸, 1~7=블록 타입
 
   @HiveField(1)
   int currentPieceType;
@@ -24,10 +25,10 @@ class GameStateModel extends HiveObject {
   int nextPieceType;
 
   @HiveField(11)
-  List<int> nextPieceQueue;
+  List<int> nextPieceQueue; // 다음 블록 큐
 
   @HiveField(12)
-  int? holdPieceType;
+  int? holdPieceType; // 보관 블록 (없으면 null)
 
   @HiveField(13)
   bool canHold;
@@ -64,6 +65,7 @@ class GameStateModel extends HiveObject {
     required this.isPaused,
   });
 
+  /** 도메인 엔티티 [GameState]로 변환. */
   GameState toEntity() {
     return GameState(
       board: board,
@@ -83,6 +85,7 @@ class GameStateModel extends HiveObject {
     );
   }
 
+  /** [GameState] 엔티티에서 모델 생성. */
   factory GameStateModel.fromEntity(GameState entity) {
     return GameStateModel(
       board: entity.board,

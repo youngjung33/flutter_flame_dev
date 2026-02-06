@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 import '../../core/constants/tetromino_patterns.dart';
 import '../managers/game_state_manager.dart';
 
+/**
+ * Hold 영역: 보관 중인 블록 또는 "Hold" 텍스트. [cellSize]는 리사이즈 시 갱신됨.
+ */
 class HoldPieceComponent extends PositionComponent with HasGameRef {
   final GameStateManager gameState;
-  final double cellSize;
+  double cellSize; // 한 셀 픽셀 크기
 
   HoldPieceComponent({
     required this.gameState,
     required this.cellSize,
   });
 
+  /** 4x4 영역에 배경·보관 블록 또는 "Hold" 텍스트 그리기. */
   @override
   void render(Canvas canvas) {
     // 배경
@@ -58,11 +62,12 @@ class HoldPieceComponent extends PositionComponent with HasGameRef {
         }
       }
     } else {
-      // 보관함이 비어있으면 텍스트 표시
+      // 보관함이 비어있으면 텍스트 표시 (글자 크기는 셀 크기 비율)
+      final fontSize = (cellSize * 0.55).clamp(8.0, 20.0);
       final textPainter = TextPainter(
-        text: const TextSpan(
+        text: TextSpan(
           text: 'Hold',
-          style: TextStyle(color: Colors.grey, fontSize: 12),
+          style: TextStyle(color: Colors.grey, fontSize: fontSize),
         ),
         textDirection: TextDirection.ltr,
       );

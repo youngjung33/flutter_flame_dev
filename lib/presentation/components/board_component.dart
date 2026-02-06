@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 import '../../core/constants/tetromino_patterns.dart';
 import '../managers/game_state_manager.dart';
 
+/**
+ * 메인 보드 렌더: 그리드·고정 블록·Ghost Piece·현재 블록. [cellSize]는 리사이즈 시 갱신됨.
+ */
 class BoardComponent extends PositionComponent with HasGameRef {
   final GameStateManager gameState;
-  final double cellSize;
+  double cellSize; // 한 셀 픽셀 크기 (TetrisGame._layout에서 설정)
 
   BoardComponent({
     required this.gameState,
     required this.cellSize,
   });
 
+  /** 보드 배경·그리드·고정 블록·Ghost·현재 블록 순서로 그리기. */
   @override
   void render(Canvas canvas) {
     // 보드 배경
@@ -104,6 +108,7 @@ class BoardComponent extends PositionComponent with HasGameRef {
     }
   }
 
+  /** Ghost 블록: 반투명 테두리만 그려 착지 예상 위치 표시. */
   void _drawGhostBlock(Canvas canvas, int x, int y, int type) {
     final colors = [
       Colors.transparent,
@@ -134,6 +139,7 @@ class BoardComponent extends PositionComponent with HasGameRef {
     );
   }
 
+  /** 셀 (x,y)에 타입별 색상 블록 + 하이라이트 테두리 그리기. */
   void _drawBlock(Canvas canvas, int x, int y, int type) {
     final colors = [
       Colors.transparent,

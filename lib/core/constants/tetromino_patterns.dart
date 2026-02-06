@@ -1,7 +1,9 @@
-// 테트로미노 패턴 정의 (4x4 그리드, 회전 상태별)
+/**
+ * 테트로미노 4x4 패턴 상수. 키 = (타입-1)*4 + 회전(0~3), 값 = 4x4 그리드(0=빈칸, 1=블록).
+ * 타입 순: I(0~3), O(4~7), T(8~11), S(12~15), Z(16~19), J(20~23), L(24~27).
+ */
 class TetrominoPatterns {
-  // 각 테트로미노의 회전 상태별 패턴
-  // 0 = 빈칸, 1 = 블록
+  // 각 테트로미노의 회전 상태별 패턴 (0 = 빈칸, 1 = 블록)
   static const Map<int, List<List<int>>> patterns = {
     // I (직선)
     0: [
@@ -180,12 +182,12 @@ class TetrominoPatterns {
     ],
   };
 
-  // 테트로미노 타입별 색상 (1-7)
+  /** 타입(1~7)을 그대로 색 인덱스로 사용. */
   static int getColorForType(int type) {
     return type;
   }
 
-  // 패턴 가져오기 (type: 1-7, rotation: 0-3)
+  /** [type] 1~7, [rotation] 0~3에 해당하는 4x4 패턴 반환. */
   static List<List<int>> getPattern(int type, int rotation) {
     final patternIndex = (type - 1) * 4 + rotation;
     return patterns[patternIndex] ?? patterns[0]!;

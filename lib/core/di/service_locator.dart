@@ -10,13 +10,18 @@ import '../../domain/usecases/load_game_state.dart';
 import '../../domain/usecases/save_game_score.dart';
 import '../../domain/usecases/save_game_state.dart';
 
+/** GetIt 인스턴스 (DI 컨테이너). */
 final sl = GetIt.instance;
 
+/**
+ * 의존성 주입 초기화: Hive 설정, DataSource/Repository/UseCase 등록.
+ * 앱 시작 시 main()에서 한 번 호출.
+ */
 Future<void> init() async {
   // Hive 초기화
   await Hive.initFlutter();
 
-  // Hive Adapter 등록
+  // Hive Adapter 등록 (0=GameScore, 1=GameState)
   if (!Hive.isAdapterRegistered(0)) {
     Hive.registerAdapter(GameScoreModelAdapter());
   }

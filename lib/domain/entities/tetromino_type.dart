@@ -1,3 +1,4 @@
+/** 테트로미노 종류 (I,O,T,S,Z,J,L). */
 enum TetrominoType {
   i, // 직선
   o, // 정사각형

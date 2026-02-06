@@ -3,20 +3,24 @@ import 'package:flutter/material.dart';
 import '../../core/constants/tetromino_patterns.dart';
 import '../managers/game_state_manager.dart';
 
+/**
+ * Next 큐 영역: 다음에 나올 블록 5개를 세로로 표시. [cellSize]는 리사이즈 시 갱신됨.
+ */
 class NextQueueComponent extends PositionComponent with HasGameRef {
   final GameStateManager gameState;
-  final double cellSize;
+  double cellSize; // 한 셀 픽셀 크기
 
   NextQueueComponent({
     required this.gameState,
     required this.cellSize,
   });
 
+  /** Next 큐 블록들을 위에서부터 세로로 하나씩 그리기. */
   @override
   void render(Canvas canvas) {
-    // 다음 블록 큐 그리기 (최대 5개)
-    final pieceSize = 4 * cellSize;
-    final spacing = 10.0;
+    // 다음 블록 큐 그리기 (최대 5개), 간격은 셀 크기 비율
+    final pieceSize = 4 * cellSize;   // 4x4 미노 한 칸 크기
+    final spacing = cellSize * 0.5;   // 블록 사이 세로 간격
     final totalHeight = (pieceSize + spacing) * gameState.nextPieceQueue.length;
 
     for (int i = 0; i < gameState.nextPieceQueue.length; i++) {

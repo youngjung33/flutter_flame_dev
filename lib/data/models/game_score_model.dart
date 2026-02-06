@@ -3,6 +3,7 @@ import '../../domain/entities/game_score.dart';
 
 part 'game_score_model.g.dart';
 
+/** Hive 저장용 점수 모델 (typeId: 0). [GameScore] 엔티티와 변환. */
 @HiveType(typeId: 0)
 class GameScoreModel extends HiveObject {
   @HiveField(0)
@@ -15,7 +16,7 @@ class GameScoreModel extends HiveObject {
   int lines;
 
   @HiveField(3)
-  DateTime timestamp;
+  DateTime timestamp; // 기록 시각
 
   GameScoreModel({
     required this.score,
@@ -24,6 +25,7 @@ class GameScoreModel extends HiveObject {
     required this.timestamp,
   });
 
+  /** 도메인 엔티티 [GameScore]로 변환. */
   GameScore toEntity() {
     return GameScore(
       score: score,
@@ -33,6 +35,7 @@ class GameScoreModel extends HiveObject {
     );
   }
 
+  /** [GameScore] 엔티티에서 모델 생성. */
   factory GameScoreModel.fromEntity(GameScore entity) {
     return GameScoreModel(
       score: entity.score,

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'tetromino_type.dart';
 
+/** 저장/복원용 게임 상태 스냅샷 (보드·현재/다음/홀드 블록·점수·일시정지 등). */
 class GameState extends Equatable {
   final List<List<int>> board; // 0 = 빈칸, 1-7 = 블록 타입
   final int currentPieceType;
